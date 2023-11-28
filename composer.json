@@ -1,0 +1,57 @@
+{
+  "name": "spaf/metamagic",
+  "description": "PHP MetaMagic implementation",
+  "keywords": [
+    "simple", "attributes", "quick prototyping",
+    "php", "easy cast", "meta-magic", "library", "optimization", "light"
+  ],
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ivan Ponomarev",
+      "email": "i.ponomarev@pandev.tech"
+    }
+  ],
+  "type": "library",
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9",
+    "phpmd/phpmd": "^2.13",
+    "spaf/simputils": "^1"
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "spaf\\metamagic\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": [
+      "phpunit tests"
+    ],
+    "coverage": [
+      "XDEBUG_MODE=coverage phpunit tests --coverage-html docs/reports/coverage/html"
+    ],
+    "coverage-clover": [
+      "XDEBUG_MODE=coverage phpunit tests --coverage-clover docs/reports/coverage/clover.xml"
+    ],
+    "mess": [
+      "phpmd --ignore-violations-on-exit src/ html codesize,unusedcode,naming > docs/reports/quality/mess-analysis-codesize-report.html"
+    ],
+    "pipeline-mess": [
+      "phpmd src/ text codesize,unusedcode,naming"
+    ]
+  },
+  "scripts-descriptions": {
+    "test": "Run the whole PHPUnit test suit",
+    "coverage": "Run the whole PHPUnit test with Coverage suit. Output in HTML at \"docs/coverage/html\"",
+    "coverage-clover": "Run the whole PHPUnit test with Coverage suit. Output in clover xml at \"docs/coverage/\"",
+    "mess": "Runs phpmd Mess Analysis on scopes of \"codesize,unusedcode,naming\". Output in HTML at \"docs/quality/mess-analysis-codesize-report.html\"",
+
+    "pipeline-mess": "Runs phpmd Mess Analysis on scopes of \"codesize,unusedcode,naming\" and return non 0 exit status if rules are violated. Reasonable for CI/CD pipelines."
+  }
+}

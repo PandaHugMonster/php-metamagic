@@ -1,0 +1,15 @@
+run.php
+
+clover.xml
+.env
+.idea
+vendor
+.phpdoc
+phpdoc
+phpDocumentor.phar
+html-coverage
+.phpunit.cache
+.phpunit.result.cache
+#composer.lock
+
+/tmp/
