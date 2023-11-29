@@ -1,9 +1,10 @@
 <?php
 
-namespace spaf\simputils\attributes\markers;
+namespace spaf\metamagic\attributes\markers;
 
 use Attribute;
-use spaf\simputils\generic\BasicAttribute;
+use spaf\metamagic\basic\BasicAttribute;
+
 
 /**
  * Deprecated marker

@@ -4,6 +4,7 @@ namespace spaf\metamagic\components;
 
 use ReflectionAttribute;
 use Reflector;
+use spaf\metamagic\basic\BasicDecoratorAlikeAttribute;
 
 /**
  * Spell Wrapper
@@ -30,6 +31,13 @@ class Spell {
 		public array     $all_attr_reflections,
 	) {
 
+	}
+
+	function __invoke(...$args) {
+		$attr_reflection = $this->major_attr_reflections[0];
+		/** @var BasicDecoratorAlikeAttribute $attr */
+		$attr = $attr_reflection->newInstance();
+		return $attr->conjure($this, ...$args);
 	}
 
 }

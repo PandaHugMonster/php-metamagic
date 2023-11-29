@@ -5,8 +5,18 @@ namespace initial\samples;
 use Attribute;
 use spaf\simputils\attributes\markers\Shortcut;
 
+#[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
+class SimpleRepeatableAttribute {
+
+}
+
 #[Attribute]
 class SimpleForAllAttribute {
+
+}
+
+#[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_FUNCTION)]
+class SimpleLimitedAttribute {
 
 }
 
@@ -23,12 +33,18 @@ class VeryCommonClass {
 	private const CONST_PRIVATE_3 = 3;
 
 
+	#[SimpleRepeatableAttribute]
+	#[SimpleRepeatableAttribute]
+	#[SimpleRepeatableAttribute]
 	#[SimpleForAllAttribute]
 	static public $static_public_field_4;
 
+	#[SimpleRepeatableAttribute]
+	#[SimpleRepeatableAttribute]
 	#[SimpleForAllAttribute]
 	static protected $static_protected_field_5;
 
+	#[SimpleRepeatableAttribute]
 	#[SimpleForAllAttribute]
 	static private $static_private_field_6;
 
@@ -60,6 +76,7 @@ class VeryCommonClass {
 
 	}
 
+	#[SimpleLimitedAttribute]
 	#[SimpleForAllAttribute]
 	private function dynamicPrivateMethod13() {
 
@@ -77,6 +94,7 @@ class VeryCommonClass {
 
 	}
 
+	#[SimpleLimitedAttribute]
 	#[SimpleForAllAttribute]
 	static private function staticPrivateMethod16() {
 

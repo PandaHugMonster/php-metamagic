@@ -8,13 +8,9 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
 use spaf\metamagic\components\Spell;
-use spaf\simputils\Math;
 use T;
 use function array_merge;
-use function count;
 use function is_object;
-use function spaf\simputils\basic\pd;
-use function spaf\simputils\basic\pr;
 
 /**
  * Meta Magic Helper
@@ -38,6 +34,7 @@ class MetaMagic {
 	 * @param bool                   $first
 	 *
 	 * @return Spell|Spell[]
+	 * @throws ReflectionException
 	 */
 	static function find(
 		object|string       $entity,
@@ -55,10 +52,6 @@ class MetaMagic {
 			$attr_of_attr_reflection = $attr_class_reflection->getAttributes(Attribute::class)[0];
 			$attr_supported_targets_mask = $attr_of_attr_reflection->getArguments()[0]
 				?? Attribute::TARGET_ALL;
-
-			if ($attr_supported_targets_mask === Attribute::IS_REPEATABLE) {
-				$attr_supported_targets_mask |= Attribute::TARGET_ALL;
-			}
 
 			// NOTE This ensures, that only supported by attribute cases are
 			//      iterated over to spare some cycles.
