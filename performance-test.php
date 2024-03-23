@@ -1,16 +1,13 @@
 <?php
 
 use spaf\metamagic\attributes\magic\Invoke;
-use spaf\metamagic\MetaMagic;
-use spaf\metamagic\traits\MagicAliasTrait;
-use spaf\metamagic\traits\MetaMagicTrait;
-use spaf\simputils\attributes\markers\Affecting;
-use spaf\simputils\attributes\markers\Deprecated;
-use spaf\simputils\attributes\markers\Shortcut;
+use spaf\metamagic\traits\MagicMethodsTrait;
 use spaf\simputils\attributes\Property;
 use spaf\simputils\generic\SimpleObject;
 use spaf\simputils\Math;
 use spaf\simputils\Str;
+use spaf\simputils\traits\MetaMagic;
+use spaf\simputils\traits\SimpleObjectTrait;
 use function spaf\simputils\basic\now;
 use function spaf\simputils\basic\pd;
 use function spaf\simputils\basic\pr;
@@ -26,11 +23,11 @@ trait ttt {
 }
 
 class TestMagicAliasesPP {
-	use MagicAliasTrait;
+	use MagicMethodsTrait;
 
 	#[Invoke]
 	protected function myPersonalInvoke2($first_arg) {
-		prstr("YEEHA 2! {$first_arg}");
+		return prstr("YEEHA 2! {$first_arg}");
 	}
 
 }
@@ -41,7 +38,7 @@ class TestMagicAliases extends TestMagicAliasesPP {
 
 	#[Invoke]
 	function myPersonalInvoke3($first_arg) {
-		prstr("YEEHA 3! {$first_arg}");
+		return prstr("YEEHA 3! {$first_arg}");
 	}
 //
 //	public function __invoke(...$args) {
@@ -53,19 +50,75 @@ class TestMagicAliases extends TestMagicAliasesPP {
 
 class TestMagicAliases2 extends SimpleObject {
 
-	function __invoke($first_arg) {
-		prstr("YEEHA 3! {$first_arg}");
-	}
+//	function __invoke($first_arg) {
+//		prstr("YEEHA 3! {$first_arg}");
+//	}
 
 	#[Property]
 	protected function myPersonalInvoke4() {
-		prstr("YEEHA 2! Property");
+		echo "YEEHA 2! Property";
+//		prstr("YEEHA 2! Property");
 	}
 }
 
-function methodCall($obj) {
+trait GetterSetter {
+
+	function __get(string $name) {
+//		$name = ucfirst($name);
+//		$name = "get{$name}";
+//
+//		return $this->$name();
+		return Invoke::process($this);
+	}
+
+}
+
+class ffff {
+	use MetaMagic;
+
+}
+
+class TestConventionalGetter extends ffff {
+	use GetterSetter;
+
+	private $i = 0;
+
+	#[Invoke]
+	public function getMynose() {
+		$this->i += 1;
+		return "I have taken your nose / {$this->i}";
+	}
+}
+
+
+$tcg = new TestConventionalGetter;
+
+
+
+
+
+
+
+
+
+
+
+
+function tcgTry($obj, $amount) {
+	ob_start();
 	$start = now();
-	foreach (Math::range(0, 1000) as $i) {
+	foreach (Math::range(0, $amount) as $i) {
+		echo "{$obj->mynose} {$i}";
+	}
+	ob_end_clean();
+	$delta = now()->diff($start);
+	pr("tcg: {$delta}");
+}
+
+
+function methodCall($obj, $amount) {
+	$start = now();
+	foreach (Math::range(0, $amount) as $i) {
 		$obj->myPersonalInvoke3("Simple Method call {$i}");
 		//	$obj("my test {$i}!");
 	}
@@ -73,35 +126,48 @@ function methodCall($obj) {
 	pr("Simple method call delta: {$delta}");
 }
 
-function propertyAccess($obj) {
+function propertyAccess($obj, $amount) {
+	ob_start();
+
 	$start = now();
-	foreach (Math::range(0, 1000) as $i) {
+	foreach (Math::range(0, $amount) as $i) {
 		$d = $obj->myPersonalInvoke4;
 		//	$obj("my test {$i}!");
 	}
 	$delta = now()->diff($start);
+	ob_end_clean();
 	pr("Property access delta: {$delta}");
 }
 
-function magicMethodCall($obj) {
+function magicMethodCall($obj, $amount) {
 	$start = now();
-	foreach (Math::range(0, 1000) as $i) {
+	foreach (Math::range(0, $amount) as $i) {
 		$obj("Magic Method call {$i}");
 	}
 	$delta = now()->diff($start);
 	pr("Magic Method call delta: {$delta}");
 }
 
-function metaMagicCall($obj) {
+function metaMagicCall($obj, $amount) {
 	$start = now();
-	foreach (Math::range(0, 1000) as $i) {
+	foreach (Math::range(0, $amount) as $i) {
 		$obj("MetaMagic call {$i}");
 	}
 	$delta = now()->diff($start);
 	pr("MetaMagic call delta: {$delta}");
 }
 
-function metaMagicPseudoCachingCall($obj) {
+function metaMagicDirectCall($obj, $amount) {
+	$start = now();
+	foreach (Math::range(0, $amount) as $i) {
+		Invoke::process($obj, "MetaMagic direct call {$i}");
+//		$obj("MetaMagic call {$i}");
+	}
+	$delta = now()->diff($start);
+	pr("MetaMagic direct call delta: {$delta}");
+}
+
+function metaMagicPseudoCachingCall($obj, $amount) {
 	/** @var TestMagicAliases $obj */
 	$arr = [];
 
@@ -126,28 +192,48 @@ function metaMagicPseudoCachingCall($obj) {
 $obj = new TestMagicAliases;
 $obj2 = new TestMagicAliases2;
 
-methodCall($obj);
+$amount = 10_000_000;
 
-methodCall($obj);
+tcgTry($tcg, $amount);
 
-pr(Str::mul("-", 30));
+//methodCall($obj, $amount);
+propertyAccess($obj2, $amount);
+//metaMagicCall($obj, $amount);
+//metaMagicDirectCall($obj, $amount);
+//methodCall($obj, $amount);
+//magicMethodCall($obj2, $amount);
+//metaMagicPseudoCachingCall($obj, $amount);
 
-propertyAccess($obj2);
-propertyAccess($obj2);
 
-pr(Str::mul("-", 30));
-
-magicMethodCall($obj2);
-magicMethodCall($obj2);
-
-pr(Str::mul("-", 30));
-
-metaMagicCall($obj);
-metaMagicCall($obj);
-
-pr(Str::mul("-", 30));
-
-metaMagicPseudoCachingCall($obj);
-metaMagicPseudoCachingCall($obj);
+//pr("", Str::mul("=", 30), "");
+//
+//propertyAccess($obj2, $amount);
+////propertyAccess($obj2, $amount);
+//
+//pr(Str::mul("-", 30));
+//
+//metaMagicCall($obj, $amount);
+//
+//pr(Str::mul("~", 30));
+//
+//metaMagicDirectCall($obj, $amount);
+//
+////metaMagicCall($obj, $amount);
+//
+//pr("", Str::mul("=", 30), "");
+//
+//methodCall($obj, $amount);
+////methodCall($obj, $amount);
+//
+//pr(Str::mul("-", 30));
+//
+//magicMethodCall($obj2, $amount);
+////magicMethodCall($obj2, $amount);
+//
+////pr("", Str::mul("=", 30), "");
+//
+//
+////metaMagicPseudoCachingCall($obj, $amount);
+////metaMagicPseudoCachingCall($obj, $amount);
 
 pd("DONE");

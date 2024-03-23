@@ -38,6 +38,3 @@ Minimal PHP version: **8.0**
 
 Current framework version: **0.0.1**
 
-
-## Findings
-

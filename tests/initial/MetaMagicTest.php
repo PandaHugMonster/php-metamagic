@@ -8,6 +8,7 @@ use initial\samples\SimpleLimitedAttribute;
 use initial\samples\SimpleRepeatableAttribute;
 use initial\samples\VeryCommonClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use ReflectionClassConstant;
 use ReflectionMethod;
 use ReflectionObject;
@@ -24,25 +25,24 @@ use function spaf\simputils\basic\pr;
  */
 class MetaMagicTest extends TestCase {
 
-	private function checkTypes($spells) {
-		foreach ($spells as $spell) {
-			pr($spell->item_reflection);
-		}
-		pd();
-	}
-
-	private function mapAttributeTargetToString($target) {
-		return match ($target) {
-			Attribute::TARGET_CLASS => "TARGET_CLASS",
-			Attribute::TARGET_METHOD => "TARGET_METHOD",
-			Attribute::TARGET_PROPERTY => "TARGET_PROPERTY",
-			Attribute::TARGET_CLASS_CONSTANT => "TARGET_CLASS_CONSTANT",
-		};
-	}
+//	private function checkTypes($spells) {
+//		foreach ($spells as $spell) {
+//			pr($spell->item_reflection);
+//		}
+//		pd();
+//	}
+//	private function mapAttributeTargetToString($target) {
+//		return match ($target) {
+//			Attribute::TARGET_CLASS => "TARGET_CLASS",
+//			Attribute::TARGET_METHOD => "TARGET_METHOD",
+//			Attribute::TARGET_PROPERTY => "TARGET_PROPERTY",
+//			Attribute::TARGET_CLASS_CONSTANT => "TARGET_CLASS_CONSTANT",
+//		};
+//	}
 
 	function dataProviderJustSingleTargets(): array {
 		return [
-			[Attribute::TARGET_CLASS, ReflectionObject::class],
+			[Attribute::TARGET_CLASS, ReflectionClass::class],
 			[Attribute::TARGET_METHOD, ReflectionMethod::class],
 			[Attribute::TARGET_PROPERTY, ReflectionProperty::class],
 			[Attribute::TARGET_CLASS_CONSTANT, ReflectionClassConstant::class],

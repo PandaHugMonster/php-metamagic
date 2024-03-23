@@ -3,8 +3,8 @@
 namespace spaf\metamagic\components;
 
 use ReflectionAttribute;
+use ReflectionMethod;
 use Reflector;
-use spaf\metamagic\basic\BasicDecoratorAlikeAttribute;
 
 /**
  * Spell Wrapper
@@ -12,32 +12,37 @@ use spaf\metamagic\basic\BasicDecoratorAlikeAttribute;
  * Encapsulates reference to the entity (method, class, etc.) and related attribute(s),
  * so it could be called upon.
  *
- * What essentially turns `Attribute` to "python-alike decorator".
- * Which is only partially similar.
- *
  */
 class Spell {
 
+	public string $class;
+
+	public object $object;
+
+	public Reflector $item_reflection;
+
+	public array $attr_reflections;
+
+	public string $name;
+
 	/**
-	 * @param mixed                 $entity
+	 * @param string                $class
+	 * @param object                $object
 	 * @param Reflector             $item_reflection
-	 * @param ReflectionAttribute[] $major_attr_reflections
-	 * @param ReflectionAttribute[] $all_attr_reflections
+	 * @param ReflectionAttribute[] $attr_reflections
 	 */
 	function __construct(
-		public mixed     $entity,
-		public Reflector $item_reflection,
-		public array     $major_attr_reflections,
-		public array     $all_attr_reflections,
+		string     $class,
+		object     $object,
+		Reflector $item_reflection,
+		array     $attr_reflections,
 	) {
-
-	}
-
-	function __invoke(...$args) {
-		$attr_reflection = $this->major_attr_reflections[0];
-		/** @var BasicDecoratorAlikeAttribute $attr */
-		$attr = $attr_reflection->newInstance();
-		return $attr->conjure($this, ...$args);
+		/** @var ReflectionMethod $item_reflection */
+		$this->class = $class;
+		$this->object = $object;
+		$this->item_reflection = $item_reflection;
+		$this->attr_reflections = $attr_reflections;
+		$this->name = $item_reflection->getName();
 	}
 
 }

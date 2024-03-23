@@ -9,7 +9,7 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 /**
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class Invoke extends BasicMetaMagicAttribute {
+class Get extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
 	static function process($entity, ...$args) {

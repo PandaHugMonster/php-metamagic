@@ -9,10 +9,10 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 /**
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class Invoke extends BasicMetaMagicAttribute {
+class WakeUp extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
 	static function process($entity, ...$args) {
-		return static::runMethod($entity, $args);
+		// TODO: Implement process() method.
 	}
 }
