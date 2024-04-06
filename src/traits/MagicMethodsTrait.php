@@ -15,6 +15,7 @@ use spaf\metamagic\attributes\magic\Set;
 use spaf\metamagic\attributes\magic\SetState;
 use spaf\metamagic\attributes\magic\ToString;
 use spaf\metamagic\attributes\magic\WakeUp;
+use spaf\metamagic\exceptions\SpellNotFound;
 
 trait MagicMethodsTrait {
 
@@ -30,10 +31,14 @@ trait MagicMethodsTrait {
 		return Invoke::process($this, ...$args);
 	}
 
-	function __serialize(): array {
-
-		return Serialize::process($this);
-	}
+//	function __serialize(): array {
+////        try {
+//            return Serialize::process($this);
+////        } catch (SpellNotFound $e) {
+////            $array = (array) $entity->__serialize();
+////        }
+//
+//	}
 
 	function __get(string $name) {
 		return Get::process($this, $name);
@@ -56,15 +61,15 @@ trait MagicMethodsTrait {
 	}
 
 	function __unserialize(array $data): void {
-		Deserialize::process($this, $data);
+//		Deserialize::process($this, $data);
 	}
 
-	function __toString(): string {
-		return ToString::process($this);
-	}
+//	function __toString(): string {
+//		return ToString::process($this);
+//	}
 
 	static function __set_state(array $an_array): object {
-		return SetState::process($an_array);
+//		return SetState::process($an_array);
 	}
 
 	function __clone(): void {

@@ -12,4 +12,7 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 class DebugInfo extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
+    static function process($entity, ...$args) {
+        return static::runMethod($entity, $args);
+    }
 }

@@ -27,7 +27,8 @@
   "autoload": {
     "psr-4": {
       "spaf\\metamagic\\": "src/"
-    }
+    },
+    "files": ["src/func.php"]
   },
   "scripts": {
     "test": [

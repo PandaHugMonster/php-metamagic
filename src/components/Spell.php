@@ -17,29 +17,32 @@ class Spell {
 
 	public string $class;
 
-	public object $object;
+	public ?object $object;
 
 	public Reflector $item_reflection;
 
 	public array $attr_reflections;
 
-	public string $name;
+    public bool $is_static = false;
 
 	/**
 	 * @param string                $class
-	 * @param object                $object
+	 * @param ?object               $object
 	 * @param Reflector             $item_reflection
 	 * @param ReflectionAttribute[] $attr_reflections
 	 */
 	function __construct(
 		string     $class,
-		object     $object,
+		?object    $object,
 		Reflector $item_reflection,
 		array     $attr_reflections,
 	) {
 		/** @var ReflectionMethod $item_reflection */
 		$this->class = $class;
 		$this->object = $object;
+        if (is_null($this->object)) {
+            $this->is_static = true;
+        }
 		$this->item_reflection = $item_reflection;
 		$this->attr_reflections = $attr_reflections;
 		$this->name = $item_reflection->getName();

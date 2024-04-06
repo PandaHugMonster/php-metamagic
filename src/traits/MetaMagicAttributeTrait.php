@@ -3,10 +3,13 @@
 namespace spaf\metamagic\traits;
 
 use Attribute;
-use Exception;
 use ReflectionClass;
+use spaf\metamagic\exceptions\NoCallableAvailable;
+use spaf\metamagic\exceptions\SpellNotFound;
 use spaf\metamagic\MetaMagic;
 use function is_object;
+
+// MARK Optimize and maybe a bit of refactoring
 
 trait MetaMagicAttributeTrait {
 
@@ -21,7 +24,15 @@ trait MetaMagicAttributeTrait {
 			// NOTE Static
 			$entity_type = "S";
 		}
-		$cache = &static::$meta_magic_cache["{$entity_type}/{$entity::class}"];
+
+        if (is_string($entity)) {
+            $class_name = $entity;
+        } else {
+            $class_name = $entity::class;
+        }
+        $s = "{$entity_type}/{$class_name}";
+		$ss = &static::$meta_magic_cache;
+		$cache = $ss[$s] ?? null;
 		if (!($cache["callable"] ?? false)) {
 			$spell = MetaMagic::find(
 				entity: $entity,
@@ -29,15 +40,28 @@ trait MetaMagicAttributeTrait {
 				attr_targets: Attribute::TARGET_METHOD,
 				first: true,
 				filter: $filter,
+                static: $entity_type == "S",
+                dynamic: $entity_type == "D",
 			);
 			if (!$spell) {
 				$self_reflection = new ReflectionClass($attr_class);
-				throw new Exception(
-					"#[{$self_reflection->getShortName()}] attribute is not supplied."
+				throw new SpellNotFound(
+					"#[{$self_reflection->getShortName()}] attribute is not supplied for unknown params."
 				);
 			}
-			$cache["callable"] = $spell->item_reflection->getClosure($entity);
+            if (is_string($entity)) {
+                if ($spell->item_reflection->isStatic()) {
+                    $cache["callable"] = $spell->item_reflection->getClosure();
+                }
+            } else {
+                $cache["callable"] = $spell->item_reflection->getClosure($entity);
+            }
 		}
+        if (empty($cache["callable"])) {
+            throw new NoCallableAvailable(
+                "Callable is not available (most likely dynamic method on class)"
+            );
+        }
 		return $cache["callable"](...$args);
 	}
 

@@ -13,4 +13,7 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 class CopyShallow extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
+    static function process($entity, ...$args) {
+        static::runMethod($entity, $args);
+    }
 }
