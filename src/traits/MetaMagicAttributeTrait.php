@@ -15,7 +15,10 @@ trait MetaMagicAttributeTrait {
 
 	static protected array $meta_magic_cache = [];
 
-	static protected function runMethod($entity, array $args, ?callable $filter = null) {
+	static protected function runMethod(
+		$entity, array $args,
+		?callable $filter = null,
+	) {
 		$attr_class = static::class;
 		if (is_object($entity)) {
 			// NOTE Dynamic

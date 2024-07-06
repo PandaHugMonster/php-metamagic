@@ -7,12 +7,13 @@ use spaf\metamagic\basic\BasicMetaMagicAttribute;
 use spaf\metamagic\traits\MetaMagicAttributeTrait;
 
 /**
+ * `__isset()` magic method
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class WakeUp extends BasicMetaMagicAttribute {
+class IsAssigned extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
 	static function process($entity, ...$args) {
-		// TODO: Implement process() method.
+		return static::runMethod($entity, $args);
 	}
 }
