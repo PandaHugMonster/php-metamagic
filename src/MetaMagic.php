@@ -78,7 +78,8 @@ class MetaMagic {
 
         // NOTE Class-level attrs
         if ($attr_targets & Attribute::TARGET_CLASS) {
-            $cached = static::_findAllEntitySpells(
+//            $cached = static::_findAllEntitySpells(
+            $res = static::_findAllEntitySpells(
                 [$entity_reflection],
                 $attr_class,
                 $entity,
@@ -88,17 +89,18 @@ class MetaMagic {
                 $dynamic
             );
 
-            if ($first && $cached) {
-                return $cached[0];
+            if ($first && $res) {
+                return $res[0];
             }
 
-            $spells = array_merge($spells, $cached);
+            $spells = array_merge($spells, $res);
         }
 
         foreach (self::$steps as $processing_target => $reflection_func_name) {
             // NOTE Checking if processing target conforms the allowed ones
             if ($attr_targets & $processing_target) {
-                $cached = static::_findAllEntitySpells(
+//                $cached = static::_findAllEntitySpells(
+	            $res = static::_findAllEntitySpells(
                     $entity_reflection->$reflection_func_name(),
                     $attr_class,
                     $entity,
@@ -108,11 +110,11 @@ class MetaMagic {
                     $dynamic
                 );
 
-                if ($first && $cached) {
-                    return $cached[0];
+                if ($first && $res) {
+                    return $res[0];
                 }
 
-                $spells = array_merge($spells, $cached);
+                $spells = array_merge($spells, $res);
             }
         }
 
@@ -218,15 +220,15 @@ class MetaMagic {
 			if (empty($applied_attr_reflections)) {
 				continue;
 			}
-			$spell = self::$spelling_cache[$entity_class][$item_reflection_class][$item_reflection->getName()] ?? null;
-			if (!$spell) {
-				$spell = static::buildSpell(
-					$item_reflection,
-					$attr_class,
-					$entity,
-				);
-				self::$spelling_cache[$entity_class][$item_reflection_class][$item_reflection->getName()] = $spell;
-			}
+//			$spell = self::$spelling_cache[$entity_class][$item_reflection_class][$item_reflection->getName()] ?? null;
+//			if (!$spell) {
+			$spell = static::buildSpell(
+				$item_reflection,
+				$attr_class,
+				$entity,
+			);
+//				self::$spelling_cache[$entity_class][$item_reflection_class][$item_reflection->getName()] = $spell;
+//			}
 			// MARK Filter callback must be here!
 			if ($filter && is_callable($filter)) {
 				$is_in = $filter($spell);

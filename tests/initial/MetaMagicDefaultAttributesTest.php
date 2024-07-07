@@ -6,15 +6,18 @@ namespace initial;
 
 use initial\samples\ObjectForTest1;
 use initial\samples\ObjectForTest2;
+use initial\samples\ObjectForTest4;
+use initial\samples\ObjectForTest5;
 use PHPUnit\Framework\TestCase;
 use spaf\metamagic\exceptions\MagicBindingException;
+use spaf\metamagic\exceptions\TypeNotAllowedException;
 use function print_r;
 use function spl_object_id;
 
 /**
+ * @covers \spaf\metamagic\traits\MagicMethodsTrait
  * @uses \spaf\metamagic\MetaMagic
  * @uses \spaf\metamagic\components\Spell
- * @uses \spaf\metamagic\traits\MagicMethodsTrait
  * @uses \spaf\metamagic\basic\BasicMetaMagicAttribute
  */
 class MetaMagicDefaultAttributesTest extends TestCase {
@@ -136,6 +139,16 @@ class MetaMagicDefaultAttributesTest extends TestCase {
 	}
 
 	/**
+	 * @covers \spaf\metamagic\attributes\magic\Invoke
+	 */
+	function testMetaMagicInvoke() {
+		$class = ObjectForTest1::class;
+		$obj = new $class;
+
+		$this->assertEquals("Object Was Invoked", "{$obj()}");
+	}
+
+	/**
 	 * @covers \spaf\metamagic\attributes\magic\ToString
 	 * @uses  \spaf\metamagic\attributes\magic\Set
 	 */
@@ -150,7 +163,20 @@ class MetaMagicDefaultAttributesTest extends TestCase {
 		$obj->my_new_property_3 = "Val 3";
 
 		$this->assertEquals("Val 1,Val 2,Val 3", "{$obj}");
+	}
 
+	/**
+	 * @covers \spaf\metamagic\attributes\magic\ToString
+	 * @uses  \spaf\metamagic\attributes\magic\Set
+	 */
+	function testMetaMagicToStringNullConversion() {
+		$objWithConversion = new ObjectForTest4;
+		$objWithoutConversion = new ObjectForTest5;
+
+		$this->assertEquals("", "{$objWithConversion}");
+
+		$this->expectException(TypeNotAllowedException::class);
+		$r = "$objWithoutConversion";
 	}
 
 }

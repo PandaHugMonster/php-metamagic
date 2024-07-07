@@ -10,6 +10,7 @@ use spaf\metamagic\attributes\magic\CopyShallow;
 use spaf\metamagic\attributes\magic\DebugInfo;
 use spaf\metamagic\attributes\magic\Del;
 use spaf\metamagic\attributes\magic\Get;
+use spaf\metamagic\attributes\magic\Invoke;
 use spaf\metamagic\attributes\magic\IsAssigned;
 use spaf\metamagic\attributes\magic\Set;
 use spaf\metamagic\attributes\magic\ToString;
@@ -63,9 +64,13 @@ class ObjectForTest1 {
 		$this->_internal_vars[$name] = $val;
 	}
 
+	#[Invoke]
+	function myInvoke(): string {
+		return "Object Was Invoked";
+	}
+
 	#[ToString(null_conversion: false)]
 	function myToString(): string {
-		print_r($this->_internal_vars);
 		return implode(",", $this->_internal_vars);
 	}
 
@@ -98,4 +103,22 @@ class ObjectForTest3 {
 		return implode(",", $this->_internal_vars);
 	}
 
+}
+
+class ObjectForTest4 {
+	use MagicMethodsTrait;
+
+	#[ToString(null_conversion: true)]
+	function myToString(): ?string {
+		return null;
+	}
+}
+
+class ObjectForTest5 {
+	use MagicMethodsTrait;
+
+	#[ToString(null_conversion: false)]
+	function myToString(): ?string {
+		return null;
+	}
 }

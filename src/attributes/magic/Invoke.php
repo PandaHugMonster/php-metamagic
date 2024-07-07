@@ -19,12 +19,6 @@ class Invoke extends BasicMetaMagicAttribute {
 
 	function process(Spell $spell, ...$args) {
 		$entity = $spell->entity;
-
-        try {
-            return static::runMethod($entity, $args);
-        } catch (SpellNotFound) {
-            $class_name = $entity::class;
-            throw new ObjectNotInvokable("Object of class \"{$class_name}\" is not invokable");
-        }
+        return static::runMethod($entity, $args);
 	}
 }
