@@ -17,6 +17,7 @@ class AdditionalChecksTest extends TestCase {
 		$obj2->gg2 = "test2";
 		$obj3->gg3 = "test3";
 
+
 		print_r($obj2->internal_vars);
 		// MARK Still issue with caching apparently. Even though caching was removed.
 		$this->assertNotEmpty($obj2->internal_vars);
