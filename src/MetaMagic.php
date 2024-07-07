@@ -2,6 +2,7 @@
 
 namespace spaf\metamagic;
 
+use A;
 use Attribute;
 use ReflectionClass;
 use ReflectionClassConstant;
@@ -51,13 +52,13 @@ class MetaMagic {
 	 * @template A
 	 *
 	 * @param object|class-string<T> $entity
-	 * @param class-string<A>        $attr_class
-	 * @param int                    $attr_targets
-	 * @param ?callable              $filter
-	 * @param bool                   $first
-	 *
+	 * @param class-string<A> $attr_class
+	 * @param int $attr_targets
+	 * @param bool $first
+	 * @param ?callable $filter
+	 * @param bool $static
+	 * @param bool $dynamic
 	 * @return Spell|Spell[]
-	 * @throws ReflectionException
 	 */
 	static function find(
 		object|string $entity,
@@ -67,7 +68,7 @@ class MetaMagic {
 		?callable     $filter = null,
         bool          $static = true,
         bool          $dynamic = true,
-	): Spell|array {
+	): Spell|array|null {
 		$spells = [];
 
 //        $k = $attr_targets;
@@ -114,6 +115,10 @@ class MetaMagic {
                 $spells = array_merge($spells, $cached);
             }
         }
+
+		if (empty($spells)) {
+			return null;
+		}
 
 		return $spells;
 	}

@@ -5,11 +5,17 @@
 namespace initial;
 
 use initial\samples\ObjectForTest1;
+use initial\samples\ObjectForTest2;
 use PHPUnit\Framework\TestCase;
+use spaf\metamagic\exceptions\MagicBindingException;
 use function print_r;
 use function spl_object_id;
 
 /**
+ * @uses \spaf\metamagic\MetaMagic
+ * @uses \spaf\metamagic\components\Spell
+ * @uses \spaf\metamagic\traits\MagicMethodsTrait
+ * @uses \spaf\metamagic\basic\BasicMetaMagicAttribute
  */
 class MetaMagicDefaultAttributesTest extends TestCase {
 
@@ -36,6 +42,37 @@ class MetaMagicDefaultAttributesTest extends TestCase {
 	}
 
 	/**
+	 * @covers \spaf\metamagic\attributes\magic\Call
+	 * @covers \spaf\metamagic\exceptions\MethodNotFound
+	 * @runInSeparateProcess
+	 */
+	function testMetaMagicStaticCallException() {
+		$this->expectException(MagicBindingException::class);
+
+		$class = ObjectForTest2::class;
+		$method = "nonExistingStaticMethod";
+
+		$class::$method();
+	}
+
+	/**
+	 * @covers \spaf\metamagic\attributes\magic\Call
+	 * @covers \spaf\metamagic\exceptions\MethodNotFound
+	 * @runInSeparateProcess
+	 */
+	function testMetaMagicDynamicCallException() {
+		$this->expectException(MagicBindingException::class);
+
+		$class = ObjectForTest2::class;
+		$obj = new $class;
+		$method = "nonExistingDynamicMethod";
+
+		$obj->$method();
+	}
+
+
+
+	/**
 	 * @covers \spaf\metamagic\attributes\magic\CopyShallow
 	 */
 	function testMetaMagicCopyShallow() {
@@ -60,6 +97,60 @@ class MetaMagicDefaultAttributesTest extends TestCase {
 		$expected = "initial\samples\ObjectForTest1 Object\n(\n    [info1] => val1\n    [info2] => val2\n)\n";
 		$actual = print_r($obj, true);
 		$this->assertEquals($expected, $actual);
+	}
+
+	/**
+	 * @covers \spaf\metamagic\attributes\magic\Del
+	 */
+	function testMetaMagicDel() {
+		$this->expectOutputString('unset of val3 is called');
+
+		$class = ObjectForTest1::class;
+		$obj = new $class;
+		$obj->val1 = "test";
+		$this->assertEquals("test", $obj->val1);
+		unset($obj->val3);
+
+		// NOTE Does not invoke __unset, because a known property
+		unset($obj->val1);
+	}
+
+	/**
+	 * @covers \spaf\metamagic\attributes\magic\Get
+	 * @covers \spaf\metamagic\attributes\magic\Set
+	 * @covers \spaf\metamagic\attributes\magic\IsAssigned
+	 */
+	function testMetaMagicGetterSetter() {
+		$class = ObjectForTest1::class;
+		$obj = new $class;
+
+		$expected = "My Value 1";
+
+		// NOTE Checking setting and isset
+		$this->assertFalse(isset($obj->anyPropertyEver), "Checking non-set property");
+		$obj->anyPropertyEver = $expected;
+		$this->assertTrue(isset($obj->anyPropertyEver), "Checking newly-set property");
+
+		// NOTE Checking getting
+		$this->assertEquals($expected, $obj->anyPropertyEver, "Checking the value of the newly-set property");
+	}
+
+	/**
+	 * @covers \spaf\metamagic\attributes\magic\ToString
+	 * @uses  \spaf\metamagic\attributes\magic\Set
+	 */
+	function testMetaMagicToString() {
+		$class = ObjectForTest1::class;
+		$obj = new $class;
+
+		$this->assertEquals("", "{$obj}");
+
+		$obj->my_new_property_1 = "Val 1";
+		$obj->my_new_property_2 = "Val 2";
+		$obj->my_new_property_3 = "Val 3";
+
+		$this->assertEquals("Val 1,Val 2,Val 3", "{$obj}");
+
 	}
 
 }

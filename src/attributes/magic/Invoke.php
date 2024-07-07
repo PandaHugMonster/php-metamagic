@@ -4,10 +4,12 @@ namespace spaf\metamagic\attributes\magic;
 
 use Attribute;
 use spaf\metamagic\basic\BasicMetaMagicAttribute;
+use spaf\metamagic\components\Spell;
 use spaf\metamagic\exceptions\MethodNotFound;
 use spaf\metamagic\exceptions\ObjectNotInvokable;
 use spaf\metamagic\exceptions\SpellNotFound;
 use spaf\metamagic\traits\MetaMagicAttributeTrait;
+use function print_r;
 
 /**
  */
@@ -15,7 +17,9 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 class Invoke extends BasicMetaMagicAttribute {
 	use MetaMagicAttributeTrait;
 
-	static function process($entity, ...$args) {
+	function process(Spell $spell, ...$args) {
+		$entity = $spell->entity;
+
         try {
             return static::runMethod($entity, $args);
         } catch (SpellNotFound) {

@@ -5,6 +5,8 @@ namespace spaf\metamagic\components;
 use ReflectionAttribute;
 use ReflectionMethod;
 use Reflector;
+use function print_r;
+use function var_dump;
 
 /**
  * Spell Wrapper
@@ -25,6 +27,13 @@ class Spell {
 
     public bool $is_static = false;
 
+	public string $name;
+
+	/**
+	 * @var string|object|null Either object reference, or class reference
+	 */
+	public string|object|null $entity;
+
 	/**
 	 * @param string                $class
 	 * @param ?object               $object
@@ -37,15 +46,22 @@ class Spell {
 		Reflector $item_reflection,
 		array     $attr_reflections,
 	) {
-		/** @var ReflectionMethod $item_reflection */
-		$this->class = $class;
-		$this->object = $object;
-        if (is_null($this->object)) {
-            $this->is_static = true;
+		$this->entity = $object;
+
+        if (is_null($this->entity)) {
+	        $this->entity = $class;
+	        $this->is_static = true;
         }
+
 		$this->item_reflection = $item_reflection;
 		$this->attr_reflections = $attr_reflections;
 		$this->name = $item_reflection->getName();
+	}
+
+	function process(...$args) {
+		// TODO Consider caching in the future for the created instances
+		$attr_instance = $this->attr_reflections[0]->newInstance();
+		return $attr_instance->process($this, ...$args);
 	}
 
 }
