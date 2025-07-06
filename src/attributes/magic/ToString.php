@@ -11,6 +11,11 @@ use spaf\metamagic\traits\MetaMagicAttributeTrait;
 use function is_null;
 
 /**
+ * `ToString` is triggered when object is converted into string.
+ *
+ * This is a shortcut for `__toString()` PHP magic method.
+ *
+ * PHP Magic Method - https://www.php.net/manual/en/language.oop5.magic.php#object.tostring
  */
 #[Attribute(Attribute::TARGET_METHOD)]
 class ToString extends BasicMetaMagicAttribute {

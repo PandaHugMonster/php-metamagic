@@ -1,5 +1,6 @@
 <?php
 
+use spaf\metamagic\attributes\magic\Get;
 use spaf\metamagic\attributes\magic\Invoke;
 use spaf\metamagic\traits\MagicMethodsTrait;
 use spaf\simputils\attributes\Property;
@@ -26,6 +27,9 @@ trait GetterSetter {
 }
 
 
+/**
+ * @property-read $mynose
+ */
 class TestConventionalGetter {
 	use GetterSetter;
 
@@ -35,6 +39,28 @@ class TestConventionalGetter {
 }
 
 
+/**
+ * @property-read $mynose2
+ */
+class TestMetaGetter {
+	use MagicMethodsTrait;
+
+	#[Get]
+	protected function processGetters($name) {
+		$name = ucfirst($name);
+		$name = "get{$name}";
+
+		return $this->$name();
+	}
+
+	protected function getMynose2() {
+		return "I have taken your nose too";
+	}
+}
+
+
 $obj = new TestConventionalGetter;
+$obj2 = new TestMetaGetter;
 
 pr($obj->mynose);
+pr($obj2->mynose2);
