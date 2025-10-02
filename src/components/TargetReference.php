@@ -28,6 +28,12 @@ class TargetReference {
 		}
 	}
 
+	public bool $is_static {
+		get {
+			return $this->reflection->isStatic();
+		}
+	}
+
 	/**
 	 * @var ReflectionClass|ReflectionClassConstant|ReflectionProperty|ReflectionMethod|ReflectionParameter $reflection
 	 * @noinspection PhpDocFieldTypeMismatchInspection
