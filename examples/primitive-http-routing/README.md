@@ -12,6 +12,25 @@ build a primitive http-routing solution.
    * [utils.php](components/utils.php) - Utils with the major logic of HTTP routing
    * [MyController.php](components/MyController.php) - Target class for HTTP routing
 
+Entrypoint logic
+```php
+
+$controllers = [
+	new MyController(),
+	new MyController("another-name"),
+];
+
+
+runRoute($controllers, "/another-name/route2");
+echo "----------\n";
+runRoute($controllers, "/my-controller/route1");
+echo "----------\n";
+runRoute($controllers, "/another-name/route0");
+echo "----------\n";
+runRoute($controllers, "/my-controller/route2");
+
+```
+
 Output:
 ```text
 My route number two is invoked with path "/another-name/route2"

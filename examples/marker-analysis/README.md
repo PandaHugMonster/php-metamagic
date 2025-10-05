@@ -7,6 +7,33 @@ analyse "Marker Attributes".
 
 1. [example.php](example.php) - entrypoint with a very basic logic
 
+Entrypoint logic
+```php
+
+$deprecated_methods = MetaMagic::findSpells(
+	refs: MyOldCode::class,
+	attrs: \Deprecated::class,
+	types: TargetType::MethodType,
+);
+
+foreach ($deprecated_methods as $method) {
+	/** @var SpellMethod $method */
+	print_r(
+		"Deprecated method found: ".
+		"{$method->target->reflection->class}::".
+		"{$method->target->reflection->name}()\n"
+	);
+	/** @var \Deprecated $attr */
+	$attr = $method->attr;
+	print_r(
+		"Deprecation message: ".
+		"{$attr->message}\n"
+	);
+	echo "--------------\n";
+}
+
+```
+
 Output:
 ```text
 Deprecated method found: MyOldCode::obsoleteMethod1()

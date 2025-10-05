@@ -15,10 +15,8 @@ use spaf\metamagic\spells\SpellClass;
 use spaf\metamagic\spells\SpellConstant;
 use spaf\metamagic\spells\SpellField;
 use spaf\metamagic\spells\SpellMethod;
-use function array_merge;
 use function is_array;
 use function is_string;
-use function spaf\simputils\basic\pd;
 
 class MetaMagic {
 
