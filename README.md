@@ -141,6 +141,12 @@ print_r($first_spell);
 
 ```
 
+> [!IMPORTANT]
+> Filtering by params and especially by `filter: $filter` param allows to reduce some overhead
+> for not processing every single spell when those are not needed.
+>
+> This is especially important when you are searching only first occurrence with `MetaMagic::findSpellOne()`
+
 Output:
 ```text
 spaf\metamagic\spells\SpellField Object
@@ -166,12 +172,6 @@ spaf\metamagic\spells\SpellField Object
 
 )
 ```
-
-> [!IMPORTANT]
-> Filtering by params and especially by `filter: $filter` param allows to reduce some overhead
-> for not processing every single spell when those are not needed.
-> 
-> This is especially important when you are searching only first occurrence with `MetaMagic::findSpellOne()`
 
 
 ## Magic Methods syntactic sugar
