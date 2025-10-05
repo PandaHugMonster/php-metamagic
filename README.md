@@ -99,15 +99,19 @@ $generator = MetaMagic::findSpells(
     // Refs param can contain array with objects, class-refs.
     // You also can directly specify a single ref without wrapping it into array
 	refs: $my_obj,
+	
 	// The same about attrs it can be an array of class-refs or a single class-ref to an Attribute
 	attrs: [MyClassAttr::class, MyCommonAttr::class],
+	
 	// The same about types it can be an array of enum values or a single enum value
 	types: [TargetType::ClassType, TargetType::FieldType],
+	
 	// It allows to control whether you want to
 	// search attributes with inheritance involved or exact attribute class.
 	// is_instance_of is set to true by default - what means that it will consider inheritance
 	// (children classes of an attribute as well)
 	is_instance_of: true,
+	
 	// You can perform a custom filtering by providing a callable
 	filter: $filter
 );
@@ -116,15 +120,19 @@ $first_spell = MetaMagic::findSpellOne(
 	// Refs param can contain array with objects, class-refs.
 	// You also can directly specify a single ref without wrapping it into array
 	refs: $my_obj,
+	
 	// The same about attrs it can be an array of class-refs or a single class-ref to an Attribute
 	attrs: [MyClassAttr::class, MyCommonAttr::class],
+	
 	// The same about types it can be an array of enum values or a single enum value
 	types: [TargetType::ClassType, TargetType::FieldType],
+	
 	// It allows to control whether you want to
 	// search attributes with inheritance involved or exact attribute class.
 	// is_instance_of is set to true by default - what means that it will consider inheritance
 	// (children classes of an attribute as well)
 	is_instance_of: true,
+	
 	// You can perform a custom filtering by providing a callable
 	filter: $filter
 );
