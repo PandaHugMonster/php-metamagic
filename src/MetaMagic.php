@@ -2,6 +2,7 @@
 
 namespace spaf\metamagic;
 
+use Generator;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -17,6 +18,7 @@ use spaf\metamagic\spells\SpellMethod;
 use function array_merge;
 use function is_array;
 use function is_string;
+use function spaf\simputils\basic\pd;
 
 class MetaMagic {
 
@@ -25,7 +27,8 @@ class MetaMagic {
 	 * @param class-string[]|string|null $attrs
 	 * @param TargetType[]|null $types
 	 * @param bool $is_instance_of
-	 * @return AbstractSpell[]
+	 * @param callable|null $filter
+	 * @return Generator
 	 * @throws ClassReferenceException
 	 */
 	static function findSpells(
@@ -33,26 +36,53 @@ class MetaMagic {
 		array|string|null     $attrs = null,
 		array|TargetType|null $types = null,
 		bool                  $is_instance_of = true,
-	): array {
-		$res = [];
+		null|callable         $filter = null,
+	): Generator {
 		if (!is_array($refs)) {
 			$refs = [$refs];
 		}
 		foreach ($refs as $ref) {
 			try {
-				$sub_res = static::findThem(
+				yield from static::findThem(
 					class_or_obj: $ref,
 					attrs: $attrs,
 					types: $types,
-					is_instance_of: $is_instance_of
+					is_instance_of: $is_instance_of,
+					filter: $filter,
 				);
 			} catch (ReflectionException $e) {
-				throw new ClassReferenceException("Wrong Class-Reference: \"{$ref}\"");
+				throw new ClassReferenceException(
+					"Wrong Class-Reference: \"{$ref}\""
+				);
 			}
-			$res = array_merge($res, $sub_res);
 		}
+	}
 
-		return $res;
+	/**
+	 * @param class-string|object|class-string[]|object[] $refs
+	 * @param class-string[]|string|null $attrs
+	 * @param TargetType[]|null $types
+	 * @param bool $is_instance_of
+	 * @param callable|null $filter
+	 * @return AbstractSpell|null
+	 * @throws ClassReferenceException
+	 */
+	static public function findSpellOne(
+		string|object|array   $refs,
+		array|string|null     $attrs = null,
+		array|TargetType|null $types = null,
+		bool                  $is_instance_of = true,
+		null|callable         $filter = null,
+	): AbstractSpell | null {
+		$generator = static::findSpells(
+			refs: $refs,
+			attrs: $attrs,
+			types: $types,
+			is_instance_of: $is_instance_of,
+			filter: $filter,
+		);
+
+		return $generator->current();
 	}
 
 	/**
@@ -60,7 +90,9 @@ class MetaMagic {
 	 * @return ReflectionClass|ReflectionObject
 	 * @throws ReflectionException
 	 */
-	static protected function getClassReflection(string|object $value): ReflectionClass|ReflectionObject {
+	static protected function getClassReflection(
+		string|object $value
+	): ReflectionClass|ReflectionObject {
 		if (is_string($value)) {
 			return new ReflectionClass($value);
 		}
@@ -92,7 +124,10 @@ class MetaMagic {
 		return $res;
 	}
 
-	static protected function getTargetReferenceFromReflection($reflection, $obj_or_class): TargetReference {
+	static protected function getTargetReferenceFromReflection(
+		$reflection,
+		$obj_or_class
+	): TargetReference {
 		$target = new TargetReference();
 		$target->reflection = $reflection;
 		if (!is_string($obj_or_class)) {
@@ -108,16 +143,17 @@ class MetaMagic {
 	 * @param $member_reflections
 	 * @param $attrs
 	 * @param $attr_flags
-	 * @return AbstractSpell[]
+	 * @param $filter
+	 * @return Generator
 	 */
 	static protected function createSpells(
 		$spell_class,
 		$class_or_obj,
 		$member_reflections,
 		$attrs,
-		$attr_flags
-	): array {
-		$res = [];
+		$attr_flags,
+		$filter,
+	): Generator {
 		if (!is_array($attrs)) {
 			$attrs = [$attrs];
 		}
@@ -126,26 +162,35 @@ class MetaMagic {
 				$found_attrs = $reflection->getAttributes($attr, $attr_flags);
 
 				if ($found_attrs) {
-					$target = static::getTargetReferenceFromReflection($reflection, $class_or_obj);
+					$target = static::getTargetReferenceFromReflection(
+						$reflection,
+						$class_or_obj
+					);
 					foreach ($found_attrs as $attr_reflection) {
 						/** @var ReflectionAttribute $attr_reflection */
 						$attr_instance = $attr_reflection->newInstance();
 						$spell = new $spell_class($target, $attr_instance);
 
-						$res[] = $spell;
+						if ($filter) {
+							if ($filter($spell)) {
+								yield $spell;
+							}
+						} else {
+							yield $spell;
+						}
 					}
 				}
 			}
 		}
-
-		return $res;
 	}
 
 	/**
 	 * @param class-string|object $class_or_obj
 	 * @param class-string[]|string|null $attrs
 	 * @param TargetType[]|null $types
-	 * @return AbstractSpell[]|array
+	 * @param bool $is_instance_of
+	 * @param callable|null $filter
+	 * @return Generator
 	 * @throws ReflectionException
 	 */
 	static protected function findThem(
@@ -153,9 +198,8 @@ class MetaMagic {
 		array|string|null       $attrs,
 		array|TargetType|null   $types,
 		bool                    $is_instance_of,
-	): array {
-		$res = [];
-
+		callable|null           $filter
+	): Generator {
 		$class_reflection = static::getClassReflection($class_or_obj);
 		$types = static::prepareTypes($types);
 		$attr_flags = static::prepareAttrFlags($is_instance_of);
@@ -167,32 +211,33 @@ class MetaMagic {
 		];
 
 		foreach ($types as $type) {
-			$sub_res = match ($type) {
+			yield from match ($type) {
 				TargetType::ClassType => static::createSpells(
 					...$common_args,
 					spell_class: SpellClass::class,
 					member_reflections: [$class_reflection],
+					filter: $filter,
 				),
 				TargetType::ConstType => static::createSpells(
 					...$common_args,
 					spell_class: SpellConstant::class,
 					member_reflections: $class_reflection->getReflectionConstants(),
+					filter: $filter,
 				),
 				TargetType::FieldType => static::createSpells(
 					...$common_args,
 					spell_class: SpellField::class,
 					member_reflections: $class_reflection->getProperties(),
+					filter: $filter,
 				),
 				TargetType::MethodType => static::createSpells(
 					...$common_args,
 					spell_class: SpellMethod::class,
 					member_reflections: $class_reflection->getMethods(),
+					filter: $filter,
 				),
 			};
-			$res = array_merge($res, $sub_res);
 		}
-
-		return $res;
 	}
 
 }
