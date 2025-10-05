@@ -32,7 +32,7 @@ This project is a pico-framework (tini-tiny library) for few basic purposes:
 MetaMagic is a fully redesigned subproject of [PHP SimpUtils](https://github.com/PandaHugMonster/php-simputils).
 
 
-> [!NOTICE]
+> [!NOTE]
 > There are 2 logical types of PHP Attributes:
 > 1. "Marker Attribute" - The Attributes that are used just for marking parts of code
 >    for analysis and notifications.
@@ -174,7 +174,7 @@ So special MetaMagic attributes implemented for a few reasons:
 2. To prettify the class code (it's value is very small, 
    but can improve readability what can cause better maintenance)
 
-> [!NOTICE]
+> [!NOTE]
 > There is no much reason to use these attributes besides slightly improving readability and code analysis.
 
 
