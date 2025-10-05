@@ -173,9 +173,8 @@ So special MetaMagic attributes implemented for a few reasons:
 1. To demonstrate the power of the MetaMagic pico-framework (purpose of example)
 2. To prettify the class code (it's value is very small, 
    but can improve readability what can cause better maintenance)
-
-> [!NOTE]
-> There is no much reason to use these attributes besides slightly improving readability and code analysis.
+   > [!NOTE]
+   > There is no much reason to use these attributes besides slightly improving readability and code analysis.
 
 
 [//]: # (TODO   Re-implement Magic-Methods syntactic sugar attributes)
