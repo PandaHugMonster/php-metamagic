@@ -96,8 +96,8 @@ $filter = function ($spell): AbstractSpell | null {
 
 // Generator of `AbstractSpell` objects returned
 $generator = MetaMagic::findSpells(
-// Refs param can contain array with objects, class-refs.
-// You also can directly specify a single ref without wrapping it into array
+    // Refs param can contain array with objects, class-refs.
+    // You also can directly specify a single ref without wrapping it into array
 	refs: $my_obj,
 	// The same about attrs it can be an array of class-refs or a single class-ref to an Attribute
 	attrs: [MyClassAttr::class, MyCommonAttr::class],
