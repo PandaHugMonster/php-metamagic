@@ -174,7 +174,7 @@ So special MetaMagic attributes implemented for a few reasons:
 2. To prettify the class code (it's value is very small, 
    but can improve readability what can cause better maintenance)
    * > [!NOTICE]
-   * > There is no much reason to use these attributes besides slightly improving readability and code analysis.
+     > There is no much reason to use these attributes besides slightly improving readability and code analysis.
 
 
 [//]: # (TODO   Re-implement Magic-Methods syntactic sugar attributes)
