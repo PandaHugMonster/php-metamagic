@@ -11,23 +11,27 @@ use Reflector;
 
 /**
  * Target member is a reference object
- * to anything you can assign PHP attribute
+ * to anything you can assign PHP attribute to
  *
  * For example:
  * * Class
  * * Class Constant
- * * Field (Property)
+ * * Field/Property
  * * Method
- * * Parameter
+ *
+ * Basically aggregation of the relevant info about the target member
+ *
  */
 class TargetReference {
 
+	/** @var string $name Member's name */
 	public string $name {
 		get {
 			return $this->reflection->name;
 		}
 	}
 
+	/** @var bool $is_static Flag whether member is static or not */
 	public bool $is_static {
 		get {
 			return $this->reflection->isStatic();
@@ -35,11 +39,14 @@ class TargetReference {
 	}
 
 	/**
-	 * @var ReflectionClass|ReflectionClassConstant|ReflectionProperty|ReflectionMethod|ReflectionParameter $reflection
+	 * Reflection object of the member
+	 *
+	 * @var ReflectionClass|ReflectionClassConstant|ReflectionProperty|ReflectionMethod|ReflectionParameter|null $reflection
 	 * @noinspection PhpDocFieldTypeMismatchInspection
 	 */
-	public Reflector $reflection;
+	public Reflector|null $reflection;
 
+	/** @var object|null $object Target object of the member if applicable (in case search of on object) */
 	public object|null $object = null;
 
 }

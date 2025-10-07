@@ -43,11 +43,12 @@ MetaMagic is a fully redesigned subproject of [PHP SimpUtils](https://github.com
 >    play a role of a Marker. Some use cases:
 >    * `#[\Deprecated]`
 >    * `#[\ReturnTypeWillChange]`
+>    It does not affect your code-base runtime (except some log messages 
+>    or exiting runtime in case of violations in some cases).
 > 2. "Functional Attribute" - The Attributes that contain logic and functionality directly in
 >    the Attribute classes. So those are basically real classes that could be used as normal classes
->    beside being Attributes. Some use cases:
->    * `#[\spaf\metamagic\attributes\magic\ToString]`
->    * `#[\spaf\metamagic\attributes\magic\DebugInfo]`
+>    beside being Attributes.
+>    It affects your code-base runtime.
 >
 > Why the difference?! - Because from the architectural standpoint "Functional Attribute"
 > increases coupling due to certain logic in them, while the "Marker Attribute" are dependency-free
@@ -187,8 +188,9 @@ So special MetaMagic attributes implemented for a few reasons:
 > [!NOTE]
 > There is no much reason to use these attributes besides slightly improving readability and code analysis.
 
+## Additional documentation
+1. [About spells](docs/about-spells.md)
 
-[//]: # (TODO   Re-implement Magic-Methods syntactic sugar attributes)
 
 ----
 
