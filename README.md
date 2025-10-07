@@ -24,6 +24,8 @@ This project is a pico-framework (tini-tiny library) for few basic purposes:
        * [MetaMagic Extension for casting](examples/metamagic-extension-for-casting/README.md)
      * dynamic **getter/setter** functionality (SimpUtils Props, future project)
        * [Primitive getter/setter handler](examples/primitive-getter-setter-handler/README.md)
+     * developers' quality-of-life functionality
+       * [Debug output use-case](examples/debug-output-use-case/README.md)
 4. More comfortable development process through dev-markings and architectural analysis 
    by writing utilities that analyse "Attributes" written by Architects and Lead Developers (future project)
    * Code examples:

@@ -15,6 +15,7 @@ use spaf\metamagic\spells\SpellClass;
 use spaf\metamagic\spells\SpellConstant;
 use spaf\metamagic\spells\SpellField;
 use spaf\metamagic\spells\SpellMethod;
+use function count;
 use function is_array;
 use function is_string;
 
@@ -156,25 +157,42 @@ class MetaMagic {
 			$attrs = [$attrs];
 		}
 		foreach ($member_reflections as $reflection) {
-			foreach ($attrs as $attr) {
-				$found_attrs = $reflection->getAttributes($attr, $attr_flags);
+			if (count($attrs) > 0) {
+				$target = static::getTargetReferenceFromReflection(
+					$reflection,
+					$class_or_obj
+				);
+				$spell = new $spell_class($target);
 
-				if ($found_attrs) {
-					$target = static::getTargetReferenceFromReflection(
-						$reflection,
-						$class_or_obj
-					);
-					foreach ($found_attrs as $attr_reflection) {
-						/** @var ReflectionAttribute $attr_reflection */
-						$attr_instance = $attr_reflection->newInstance();
-						$spell = new $spell_class($target, $attr_instance);
+				if ($filter) {
+					if ($filter($spell)) {
+						yield $spell;
+					}
+				} else {
+					yield $spell;
+				}
 
-						if ($filter) {
-							if ($filter($spell)) {
+			} else {
+				foreach ($attrs as $attr) {
+					$found_attrs = $reflection->getAttributes($attr, $attr_flags);
+
+					if ($found_attrs) {
+						$target = static::getTargetReferenceFromReflection(
+							$reflection,
+							$class_or_obj
+						);
+						foreach ($found_attrs as $attr_reflection) {
+							/** @var ReflectionAttribute $attr_reflection */
+							$attr_instance = $attr_reflection->newInstance();
+							$spell = new $spell_class($target, $attr_instance);
+
+							if ($filter) {
+								if ($filter($spell)) {
+									yield $spell;
+								}
+							} else {
 								yield $spell;
 							}
-						} else {
-							yield $spell;
 						}
 					}
 				}
