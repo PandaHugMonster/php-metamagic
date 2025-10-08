@@ -18,6 +18,7 @@ use spaf\metamagic\spells\SpellField;
 use spaf\metamagic\spells\SpellMethod;
 use function count;
 use function is_array;
+use function is_null;
 use function is_string;
 
 
@@ -38,6 +39,10 @@ class MetaMagic {
 	 * Method returns a generator that will return children of {@see AbstractSpell} Spells.
 	 * The purpose of generator is to reduce overhead when searching and filtering to improve
 	 * performance.
+	 *
+	 * @note  Keep in mind, no filter params are validated unless iteration over
+	 * generator is performed. It means that if something wrong with params,
+	 * you will not know this unless start iterating over the generator!
 	 *
 	 * @param class-string|object|class-string[]|object[] $refs
 	 *        class or object or array of classes and/or objects
@@ -195,18 +200,18 @@ class MetaMagic {
 	 * Preparing TargetReference object based on provided params
 	 *
 	 * @param Reflector $reflection reference reflection
-	 * @param class-string|object $obj_or_class target object or class
+	 * @param class-string|object $ref target object or class
 	 *
 	 * @return TargetReference
 	 */
 	static protected function getTargetReferenceFromReflection(
-		Reflector $reflection,
-		string|object $obj_or_class
+		Reflector     $reflection,
+		string|object $ref,
 	): TargetReference {
 		$target = new TargetReference();
 		$target->reflection = $reflection;
-		if (!is_string($obj_or_class)) {
-			$target->object = $obj_or_class;
+		if (!is_string($ref)) {
+			$target->object = $ref;
 		}
 
 		return $target;
@@ -233,49 +238,38 @@ class MetaMagic {
 		array|string|null $attrs,
 		int               $attr_flags,
 		callable|null     $filter,
+		TargetType        $type,
 	): Generator {
-		if (!is_array($attrs)) {
-			$attrs = [$attrs];
-		}
+		$attrs = is_array($attrs) ? $attrs : [$attrs];
+
 		foreach ($member_reflections as $reflection) {
-			if (count($attrs) == 0) {
-				$target = static::getTargetReferenceFromReflection(
-					$reflection,
-					$ref
-				);
-				$spell = new $spell_class($target);
+			$target = static::getTargetReferenceFromReflection(
+				$reflection,
+				$ref,
+			);
 
-				if ($filter) {
-					if ($filter($spell)) {
+			foreach ($attrs as $attr) {
+				$found_attrs = !is_null($attr)
+					?$reflection->getAttributes($attr, $attr_flags)
+					:[null];
+
+				foreach ($found_attrs as $attr_reflection) {
+
+					$spell = new $spell_class(
+						target: $target,
+						type: $type,
+
+						attr: $attr_reflection?->newInstance(),
+					);
+
+					if (empty($filter)) {
 						yield $spell;
-					}
-				} else {
-					yield $spell;
-				}
-
-			} else {
-				foreach ($attrs as $attr) {
-					$found_attrs = $reflection->getAttributes($attr, $attr_flags);
-
-					if ($found_attrs) {
-						$target = static::getTargetReferenceFromReflection(
-							$reflection,
-							$ref
-						);
-						foreach ($found_attrs as $attr_reflection) {
-							/** @var ReflectionAttribute $attr_reflection */
-							$attr_instance = $attr_reflection->newInstance();
-							$spell = new $spell_class($target, $attr_instance);
-
-							if ($filter) {
-								if ($filter($spell)) {
-									yield $spell;
-								}
-							} else {
-								yield $spell;
-							}
+					} else {
+						if ($spell = $filter($spell)) {
+							yield $spell;
 						}
 					}
+
 				}
 			}
 		}
@@ -313,6 +307,7 @@ class MetaMagic {
 			"ref" => $ref,
 			"attrs" => $attrs,
 			"attr_flags" => $attr_flags,
+			"filter" => $filter,
 		];
 
 		foreach ($types as $type) {
@@ -321,25 +316,25 @@ class MetaMagic {
 					...$common_args,
 					spell_class: SpellClass::class,
 					member_reflections: [$class_reflection],
-					filter: $filter,
+					type: $type,
 				),
 				TargetType::ConstType => static::generateSpells(
 					...$common_args,
 					spell_class: SpellConstant::class,
 					member_reflections: $class_reflection->getReflectionConstants(),
-					filter: $filter,
+					type: $type,
 				),
 				TargetType::FieldType => static::generateSpells(
 					...$common_args,
 					spell_class: SpellField::class,
 					member_reflections: $class_reflection->getProperties(),
-					filter: $filter,
+					type: $type,
 				),
 				TargetType::MethodType => static::generateSpells(
 					...$common_args,
 					spell_class: SpellMethod::class,
 					member_reflections: $class_reflection->getMethods(),
-					filter: $filter,
+					type: $type,
 				),
 			};
 		}

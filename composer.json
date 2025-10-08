@@ -18,8 +18,8 @@
     "php": ">=8.4"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9",
-    "phpmd/phpmd": "^2.13",
+    "phpunit/phpunit": "^10",
+    "phpmd/phpmd": "^2",
     "spaf/simputils": "^1"
   },
   "suggest": {
@@ -31,16 +31,16 @@
   },
   "scripts": {
     "test": [
-      "phpunit tests"
+      "phpunit --testdox"
     ],
     "coverage": [
-      "XDEBUG_MODE=coverage phpunit tests --coverage-html docs/reports/coverage/html"
+      "XDEBUG_MODE=coverage phpunit --testdox --coverage-html reports/coverage/html"
     ],
     "coverage-clover": [
-      "XDEBUG_MODE=coverage phpunit tests --coverage-clover docs/reports/coverage/clover.xml"
+      "XDEBUG_MODE=coverage phpunit --testdox --coverage-clover reports/coverage/clover.xml"
     ],
     "mess": [
-      "phpmd --ignore-violations-on-exit src/ html codesize,unusedcode,naming > docs/reports/quality/mess-analysis-codesize-report.html"
+      "phpmd --ignore-violations-on-exit src/ html codesize,unusedcode,naming > reports/quality/mess-analysis-codesize-report.html"
     ],
     "pipeline-mess": [
       "phpmd src/ text codesize,unusedcode,naming"

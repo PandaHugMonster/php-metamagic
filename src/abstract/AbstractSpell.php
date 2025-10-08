@@ -3,6 +3,7 @@
 namespace spaf\metamagic\abstract;
 
 use spaf\metamagic\components\TargetReference;
+use spaf\metamagic\enums\TargetType;
 use function is_null;
 
 
@@ -29,6 +30,9 @@ abstract class AbstractSpell {
 
 	/** @var object|null Target attribute (if applicable) */
 	public object|null $attr;
+
+	/** @var TargetType|null Target type */
+	public TargetType|null $type;
 
 	/** @var string Name got from `$target` field if available */
 	public string $name {
@@ -58,9 +62,14 @@ abstract class AbstractSpell {
 		}
 	}
 
-	function __construct(TargetReference|null $target = null, object|null $attr = null) {
+	function __construct(
+		TargetReference|null $target = null,
+		object|null $attr = null,
+		TargetType|null $type = null,
+	) {
 		$this->target = $target;
 		$this->attr = $attr;
+		$this->type = $type;
 	}
 
 }
